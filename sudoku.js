@@ -1,159 +1,121 @@
-var arr = [[], [], [], [], [], [], [], [], []]
-var temp = [[], [], [], [], [], [], [], [], []]
+var genarray=[[],[],[],[],[],[],[],[],[]]
+var temparray=[[],[],[],[],[],[],[],[],[]]
+var board=[[],[],[],[],[],[],[],[],[]]
 
-for (var i = 0; i < 9; i++) {
-    for (var j = 0; j < 9; j++) {
-        arr[i][j] = document.getElementById(i * 9 + j);
 
-    }
-}
+var newGame=document.getElementById('new-game')
+var solve=document.getElementById('solve')
 
-function initializeTemp(temp) {
 
-    for (var i = 0; i < 9; i++) {
-        for (var j = 0; j < 9; j++) {
-            temp[i][j] = false;
-
-        }
-    }
+for(var i=0;i<9;i++){
+	for(var j=0;j<9;j++){
+		genarray[i][j]=document.getElementById(i*9+j);
+	}
 }
 
 
-function setTemp(board, temp) {
-
-    for (var i = 0; i < 9; i++) {
-        for (var j = 0; j < 9; j++) {
-            if (board[i][j] != 0) {
-                temp[i][j] = true;
-            }
-
-        }
-    }
+function initializeTemparray(temparray){
+	for(var i=0;i<9;i++){
+		for(var j=0;j<9;j++){
+			temparray[i][j]=false;
+		}
+	}
 }
 
 
-function setColor(temp) {
-
-    for (var i = 0; i < 9; i++) {
-        for (var j = 0; j < 9; j++) {
-            if (temp[i][j] == true) {
-                arr[i][j].style.color = "#DC3545";
-            }
-
-        }
-    }
-}
-
-function resetColor() {
-
-    for (var i = 0; i < 9; i++) {
-        for (var j = 0; j < 9; j++) {
-
-            arr[i][j].style.color = "green";
-
-
-        }
-    }
-}
-
-var board = [[], [], [], [], [], [], [], [], []]
-
-
-let button = document.getElementById('new-game')
-let solve = document.getElementById('solve')
-
-console.log(arr)
-function changeBoard(board) {
-    for (var i = 0; i < 9; i++) {
-        for (var j = 0; j < 9; j++) {
-            if (board[i][j] != 0) {
-
-                arr[i][j].innerText = board[i][j]
-            }
-
-            else
-                arr[i][j].innerText = ''
-        }
-    }
+function setTemparray(board,temparray){
+	for(var i=0;i<9;i++){
+		for(var j=0;j<9;j++){
+			if(board[i][j]!=0)
+			temparray[i][j]=true;
+		}
+	}
 }
 
 
-button.onclick = function () {
-    var xhrRequest = new XMLHttpRequest()
-    xhrRequest.onload = function () {
-        var response = JSON.parse(xhrRequest.response)
-        console.log(response)
-        initializeTemp(temp)
-        resetColor()
-
-        board = response.board
-        setTemp(board, temp)
-        setColor(temp)
-        changeBoard(board)
-    }
-    xhrRequest.open('get', 'https://sugoku.herokuapp.com/board?difficulty=easy')
-    //we can change the difficulty of the puzzle the allowed values of difficulty are easy, medium, hard and random
-    xhrRequest.send()
+function setColor(temparray){
+	for(var i=0;i<9;i++){
+		for(var j=0;j<9;j++){
+			if(temparray[i][j]!=0)
+			genarray[i][j].style.color('RED');
+		}
+	}
 }
 
 
-function isPossible(board, sr, sc, val) {
-    for (var row = 0; row < 9; row++) {
-        if (board[row][sc] == val) {
-            return false;
-        }
-    }
-
-    for (var col = 0; col < 9; col++) {
-        if (board[sr][col] == val) {
-            return false;
-        }
-    }
-
-    var r = sr - sr % 3;
-    var c = sc - sc % 3;
-
-    for (var cr = r; cr < r + 3; cr++) {
-        for (var cc = c; cc < c + 3; cc++) {
-            if (board[cr][cc] == val) {
-                return false;
-            }
-        }
-    }
-    return true;
-
+function resetColor(temparray){
+	for(var i=0;i<9;i++){
+		for(var j=0;j<9;j++)
+			genarray[i][j].style.color('GREEN');
+	}
 }
 
 
-function solveSudokuHelper(board, sr, sc) {
-    if (sr == 9) {
-        changeBoard(board);
-        return;
-    }
-    if (sc == 9) {
-        solveSudokuHelper(board, sr + 1, 0)
-        return;
-    }
-
-    if (board[sr][sc] != 0) {
-        solveSudokuHelper(board, sr, sc + 1);
-        return;
-    }
-
-    for (var i = 1; i <= 9; i++) {
-        if (isPossible(board, sr, sc, i)) {
-            board[sr][sc] = i;
-            solveSudokuHelper(board, sr, sc + 1);
-            board[sr][sc] = 0;
-        }
-    }
+function changeBoard(board){
+	for(var i=0;i<9;i++){
+		for(var j=0;j<9;j++){
+			if(board[i][j]!=0)
+				genarray[i][j].innerText=board[i][j]
+			else
+				genarray[i][j].innerText=''
+		}
+	}
 }
 
-function solveSudoku(board) {
-    solveSudokuHelper(board, 0, 0)
+newGame.onclick=function(){
+	var xhrRequest=new XMLHttpRequest()
+	xhrRequest.onload=function(){
+		var response=JSON.parse(xhrRequest.response)
+		initializeTemparray(temparray)
+		resetColor()
+		board=response.board
+		setTemparray(board,temparray)
+		setColor(temparray)
+		changeBoard(board)
+	}
+	xhrRequest.open('get','https://sugoku.herokuapp.com/board?difficulty=easy')
+	xhrRequest.send()
 }
 
-solve.onclick = function () {
-    solveSudoku(board)
+function okToFill(board,x,y,num){
+	for(var i=0;i<9;i++){
+		if(board[x][i]==num||board[i][y]==num)
+			return false
+	}
+	for(var i=x-x%3;i<x+3-x%3;i++){
+		for(var j=y-y%3;j<y+3-y%3;j++){
+			if(board[i][j]==num)
+				return false
+		}
+	}
+	return true
+}
 
+
+function solveSudokuUtil(board,x,y){
+	if(x==9)
+		return
+	if(y==9){
+		solveSudokuUtil(board,x+1,0)
+		return
+	}
+	if(board[x][y]!=0){
+		solveSudokuUtil(board,x,y+1)
+		return
+	}
+	for(var num=1;num<=9;num++){
+		if(okToFill(board,x,y,num)){
+			board[x][y]=num;
+			solveSudokuUtil(board,x,y+1)
+			board[x][y]=0;
+		}
+	}
+}
+
+solve.onclick=function () {
+	solveSudoku(board)
+}
+
+function solveSudoku(board){
+	solveSudokuUtil(board,0,0)
 }
