@@ -36,8 +36,8 @@ function setTemparray(board,temparray){
 function setColor(temparray){
 	for(var i=0;i<9;i++){
 		for(var j=0;j<9;j++){
-			if(temparray[i][j]!=0)
-			genarray[i][j].style.color('RED');
+			if(temparray[i][j]==true)
+			genarray[i][j].style.color="#DC3545";
 		}
 	}
 }
@@ -45,8 +45,9 @@ function setColor(temparray){
 
 function resetColor(temparray){
 	for(var i=0;i<9;i++){
-		for(var j=0;j<9;j++)
-			genarray[i][j].style.color('GREEN');
+		for(var j=0;j<9;j++){
+            genarray[i][j].style.color="green";
+        }
 	}
 }
 
@@ -93,8 +94,10 @@ function okToFill(board,x,y,num){
 
 
 function solveSudokuUtil(board,x,y){
-	if(x==9)
-		return
+	if(x==9){
+        changeBoard(board)
+        return
+    }
 	if(y==9){
 		solveSudokuUtil(board,x+1,0)
 		return
@@ -112,10 +115,12 @@ function solveSudokuUtil(board,x,y){
 	}
 }
 
-solve.onclick=function () {
-	solveSudoku(board)
-}
 
 function solveSudoku(board){
 	solveSudokuUtil(board,0,0)
+}
+
+
+solve.onclick=function () {
+	solveSudoku(board)
 }
